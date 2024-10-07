@@ -1,12 +1,16 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Form from './components/Form1';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import UserData from './components/UserData';
 
 
 function App() {
   return (
-    <>
-        <Form/>
-    </>
+    <BrowserRouter>
+        <Routes>
+        <Route exact path="/" element={<Form/>} />
+        <Route exact path="/userData" element={<UserData/>} />
+        </Routes>
+    </BrowserRouter>
   );
 }
 

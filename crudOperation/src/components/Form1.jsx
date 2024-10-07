@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { RatingComponent } from "react-rating-emoji";
 import "react-rating-emoji/dist/index.css";
+import Navbar from "./Navbar";
+import { useNavigate } from "react-router-dom";
 
 const Form = () => {
   const [input, setInput] = useState({});
   const [list, setList] = useState([]);
   const [rating, setRating] = useState(0);
+  const navigate = useNavigate();
 
   // set the value in the object
   function handleInput(e) {
@@ -23,46 +26,41 @@ const Form = () => {
     // }  
   }, []);
 
-  // Save the data in localstorage
-  function handleSubmition(e) {
-    e.preventDefault();
+  function handleInput(e) {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+  }
 
-    // Include the rating in the input object
+  function handleSubmission(e) {
+    e.preventDefault();
     const updatedInput = { ...input, rating };
 
     let newList = [...list, updatedInput];
     setList(newList);
     localStorage.setItem("data", JSON.stringify(newList));
     setInput({});
-    localStorage.setItem("emojiRating", JSON.stringify(rating)); // Save the rating in localStorage
     setRating(0);
+
+    navigate('/UserData')
+
   }
 
-  function deleteData(pos) {
-    list.splice(pos, 1);
-    let newList = [...list];
-    setList(newList);
-    localStorage.setItem("data", JSON.stringify(newList));
-  }
-
-  const handleRating = (newRating) => {
+  function handleRating(newRating) {
     setRating(newRating);
-    localStorage.setItem("emojiRating", JSON.stringify(newRating)); // Correct storage for emoji rating
-  };
+  }
 
   return (
     <>
-      <div className="container">
-        <div className="row border p-3 border-dark-subtle my-4">
-          <h2 className="text-success">Registration Form</h2>
-          <form method="post" className="w-100" onSubmit={handleSubmition}>
-            <div className="mb-3">
-              <label htmlFor="name" className="form-label fw-bold fs-5">
-                Name
-              </label>
+      <Navbar />
+      <div className="container mx-auto">
+        <div className="border p-6 border-gray-300 my-8">
+          <h2 className="text-green-500 text-2xl font-bold mb-4">Registration Form</h2>
+          <form method="post" className="w-full" onSubmit={handleSubmission}>
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-lg font-semibold mb-2">Name</label>
               <input
                 type="text"
-                className="form-control"
+                className="w-full p-2 border border-gray-300 rounded"
                 name="name"
                 onChange={handleInput}
                 value={input.name || ""}
@@ -70,13 +68,11 @@ const Form = () => {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label fw-bold fs-5">
-                Email address
-              </label>
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-lg font-semibold mb-2">Email address</label>
               <input
                 type="email"
-                className="form-control"
+                className="w-full p-2 border border-gray-300 rounded"
                 name="email"
                 onChange={handleInput}
                 value={input.email || ""}
@@ -84,83 +80,24 @@ const Form = () => {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label fw-bold fs-5">
-                Password
-              </label>
-              <input
-                type="password"
-                className="form-control"
-                name="password"
-                value={input.password || ""}
+            <div className="mb-4">
+              <label htmlFor="message" className="block text-lg font-semibold mb-2">Message</label>
+              <textarea
+                className="w-full p-2 border border-gray-300 rounded"
+                name="message"
                 onChange={handleInput}
+                value={input.message || ""}
                 rows="3"
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="message" className="form-label fw-bold fs-5">
-                Message
-              </label>
-              <textarea
-                className="form-control"
-                name="message"
-                value={input.message || ""}
-                onChange={handleInput}
-                rows="3"
-              ></textarea>
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="rating" className="form-label fw-bold fs-5">
-                Rate Us
-              </label>
+            <div className="mb-4">
+              <label htmlFor="rating" className="block text-lg font-semibold mb-2">Rate Us</label>
               <RatingComponent rating={rating} onClick={handleRating} />
             </div>
 
-            <button type="submit" className="btn btn-outline-success">
-              Submit
-            </button>
+            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
           </form>
-        </div>
-      </div>
-
-      <div className="container mt-5">
-        <div className="row">
-          {list.length > 0 ? (
-            list.map((v, i) => (
-              <div className="col-md-4 mb-4" key={i}>
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">User {i + 1}</h5>
-                    <ul className="list-group list-group-flush">
-                      <li className="list-group-item">
-                        <strong>Name:</strong> {v.name}
-                      </li>
-                      <li className="list-group-item">
-                        <strong>Email:</strong> {v.email}
-                      </li>
-                      <li className="list-group-item">
-                        <strong>Password:</strong> {v.password}
-                      </li>
-                      <li className="list-group-item">
-                        <strong>Message:</strong> {v.message}
-                      </li>
-                      <li className="list-group-item">
-                      <RatingComponent rating={v.rating} />
-                        {/* <strong>Rating:</strong> {v.rating || rating} */}
-                      </li>
-                      <li className="list-group-item">
-                        <button onClick={() => deleteData(i)}>Delete</button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No users to display.</p>
-          )}
         </div>
       </div>
     </>
